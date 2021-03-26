@@ -1,0 +1,6 @@
+github.com/absfs/absfs v0.0.0-20200602175035-e49edc9fef15 h1:tcUuSvytlUEjm5D1qu7beKnaPf/uWtNXVutHxXqVJ6A=
+github.com/absfs/absfs v0.0.0-20200602175035-e49edc9fef15/go.mod h1:EcuvbVuyyWyu+g4ACjKzyUypG60qSvorqC/hjByBEqY=
+github.com/absfs/inode v0.0.0-20190804195220-b7cd14cdd0dc h1:KjciuTgBUzV6RfeVLd/Ijhy9Iq7z0JoJ44te3fZaaNE=
+github.com/absfs/inode v0.0.0-20190804195220-b7cd14cdd0dc/go.mod h1:lc9vQxyCSyrjclBTgazRvacmElJLj7VfpDmgDnL77o0=
+github.com/absfs/memfs v0.0.0-20190429000831-6a320d582782 h1:ZMk6TTOF8nbtuKMQvjL9Hyxno+l2CcfbM6PpZOMbua8=
+github.com/absfs/memfs v0.0.0-20190429000831-6a320d582782/go.mod h1:ZF+JG90ujrBa3hNBmMihd6HEB8ALIL+u0D2qfKY5d9M=
