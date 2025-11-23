@@ -1,8 +1,8 @@
 package gofs
 
 import (
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 
 	"github.com/absfs/absfs"
@@ -74,7 +74,7 @@ func (f FileSystem) ReadFile(name string) (data []byte, err error) {
 		err = file.Close()
 	}()
 
-	return ioutil.ReadAll(file)
+	return io.ReadAll(file)
 }
 
 func (f FileSystem) Stat(name string) (fs.FileInfo, error) {
@@ -91,7 +91,7 @@ func (f File) Read(data []byte) (int, error) {
 
 func (f File) ReadDir(n int) (dirs []fs.DirEntry, err error) {
 	var list []os.FileInfo
-	list, err = f.F.Readdir(0)
+	list, err = f.F.Readdir(n)
 	if err != nil {
 		return nil, err
 	}
