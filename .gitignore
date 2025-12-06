@@ -48,3 +48,8 @@ mem.out
 # Debug files
 debug
 debug.test
+
+# Claude and project metadata
+.claude/
+CLAUDE.md
+.project_meta/
