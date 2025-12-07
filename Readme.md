@@ -2,8 +2,8 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/absfs/gofs.svg)](https://pkg.go.dev/github.com/absfs/gofs)
 [![Go Report Card](https://goreportcard.com/badge/github.com/absfs/gofs)](https://goreportcard.com/report/github.com/absfs/gofs)
-[![CI](https://github.com/absfs/gofs/workflows/CI/badge.svg)](https://github.com/absfs/gofs/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/absfs/gofs/blob/master/LICENSE)
+[![CI](https://github.com/absfs/gofs/actions/workflows/ci.yml/badge.svg)](https://github.com/absfs/gofs/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 The `gofs` package adds Go `fs` filesystem interface support to any [`absfs`][1]
 filesystem implementation.

@@ -97,6 +97,10 @@ func (f FileSystem) ReadDir(name string) (dirs []fs.DirEntry, err error) {
 
 	dirs = make([]fs.DirEntry, 0, len(list))
 	for _, info := range list {
+		// Skip . and .. entries - io/fs interface doesn't include them
+		if info.Name() == "." || info.Name() == ".." {
+			continue
+		}
 		dirs = append(dirs, DirEntry{info})
 	}
 	return dirs, nil
@@ -145,16 +149,48 @@ func (f File) Read(data []byte) (int, error) {
 // If n <= 0, ReadDir returns all the DirEntry values from the directory in a single slice.
 // This implements the fs.ReadDirFile interface.
 func (f File) ReadDir(n int) (dirs []fs.DirEntry, err error) {
-	var list []os.FileInfo
-	list, err = f.F.Readdir(n)
-	if err != nil {
-		return nil, err
+	// If n <= 0, read all entries at once
+	if n <= 0 {
+		var list []os.FileInfo
+		list, err = f.F.Readdir(0)
+		if err != nil {
+			return nil, err
+		}
+
+		dirs = make([]fs.DirEntry, 0, len(list))
+		for _, info := range list {
+			// Skip . and .. entries - io/fs interface doesn't include them
+			if info.Name() == "." || info.Name() == ".." {
+				continue
+			}
+			dirs = append(dirs, DirEntry{info})
+		}
+		return dirs, nil
 	}
 
-	dirs = make([]fs.DirEntry, 0, len(list))
-	for _, info := range list {
-		dirs = append(dirs, DirEntry{info})
+	// n > 0: read until we have n valid entries (excluding . and ..)
+	dirs = make([]fs.DirEntry, 0, n)
+	for len(dirs) < n {
+		// Read one entry at a time to ensure we get exactly n valid entries
+		list, err := f.F.Readdir(1)
+		if err != nil {
+			if err == io.EOF && len(dirs) > 0 {
+				// Return what we have so far
+				return dirs, nil
+			}
+			return dirs, err
+		}
+
+		if len(list) == 0 {
+			break
+		}
+
+		// Skip . and .. entries
+		if list[0].Name() != "." && list[0].Name() != ".." {
+			dirs = append(dirs, DirEntry{list[0]})
+		}
 	}
+
 	return dirs, nil
 }
 

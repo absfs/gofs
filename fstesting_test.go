@@ -13,12 +13,6 @@ import (
 // TestGofsSuite runs the fstesting suite against gofs wrapping memfs.
 // This verifies that gofs correctly adapts absfs.Filer to io/fs.FS
 // and maintains compatibility with the standard library interfaces.
-//
-// Note: There is currently one known test failure in DirectoryOperations/ReadDir
-// because memfs includes "." and ".." entries in directory listings (valid Unix
-// behavior), while the fstesting suite expects only the actual file entries.
-// This is a quirk of memfs's implementation and does not indicate a problem
-// with gofs itself.
 func TestGofsSuite(t *testing.T) {
 	// Create a memfs instance to wrap
 	mfs, err := memfs.NewFS()
@@ -64,8 +58,35 @@ type gofsWrapper struct {
 	mfs absfs.FileSystem
 }
 
+// gofsFile wraps a file to filter out "." and ".." entries from Readdir.
+// memfs includes these entries, but they should be filtered to match expected behavior.
+type gofsFile struct {
+	absfs.File
+}
+
+func (f *gofsFile) Readdir(n int) ([]os.FileInfo, error) {
+	entries, err := f.File.Readdir(n)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter out . and .. entries
+	filtered := make([]os.FileInfo, 0, len(entries))
+	for _, entry := range entries {
+		if entry.Name() != "." && entry.Name() != ".." {
+			filtered = append(filtered, entry)
+		}
+	}
+
+	return filtered, nil
+}
+
 func (w *gofsWrapper) Create(name string) (absfs.File, error) {
-	return w.mfs.Create(name)
+	f, err := w.mfs.Create(name)
+	if err != nil {
+		return nil, err
+	}
+	return &gofsFile{File: f}, nil
 }
 
 func (w *gofsWrapper) Mkdir(name string, perm os.FileMode) error {
@@ -77,11 +98,19 @@ func (w *gofsWrapper) MkdirAll(path string, perm os.FileMode) error {
 }
 
 func (w *gofsWrapper) Open(name string) (absfs.File, error) {
-	return w.mfs.Open(name)
+	f, err := w.mfs.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return &gofsFile{File: f}, nil
 }
 
 func (w *gofsWrapper) OpenFile(name string, flag int, perm os.FileMode) (absfs.File, error) {
-	return w.mfs.OpenFile(name, flag, perm)
+	f, err := w.mfs.OpenFile(name, flag, perm)
+	if err != nil {
+		return nil, err
+	}
+	return &gofsFile{File: f}, nil
 }
 
 func (w *gofsWrapper) Remove(name string) error {
