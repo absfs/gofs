@@ -5,6 +5,38 @@
 [![CI](https://github.com/absfs/gofs/actions/workflows/ci.yml/badge.svg)](https://github.com/absfs/gofs/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+## DEPRECATED
+
+**This package is deprecated and will be removed in a future release.**
+
+The `gofs` package is no longer necessary. The `absfs` package now provides native `fs.FS` support through:
+
+- **`Filer.Sub()`** - Returns `fs.FS` directly (implements `fs.SubFS`)
+- **`Filer.ReadDir()` and `Filer.ReadFile()`** - Provide `fs.ReadDirFS`/`fs.ReadFileFS` semantics
+- **`absfs.FilerToFS()` helper** - Converts any `Filer` to `fs.FS`
+- **`absfs.File`** - Already implements `fs.File`
+
+### Migration Guide
+
+```go
+// Old code:
+stdFS, _ := gofs.NewFs(myFiler)
+data, _ := stdFS.ReadFile("hello.txt")
+
+// New code (option 1 - use Filer.Sub to get fs.FS):
+stdFS, _ := myFiler.Sub(".")
+data, _ := fs.ReadFile(stdFS, "hello.txt")
+
+// New code (option 2 - use FilerToFS helper):
+stdFS, _ := absfs.FilerToFS(myFiler, ".")
+data, _ := fs.ReadFile(stdFS, "hello.txt")
+
+// New code (option 3 - use Filer methods directly):
+data, _ := myFiler.ReadFile("hello.txt")
+```
+
+---
+
 The `gofs` package adds Go `fs` filesystem interface support to any [`absfs`][1]
 filesystem implementation.
 

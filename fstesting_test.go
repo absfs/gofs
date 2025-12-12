@@ -1,6 +1,7 @@
 package gofs_test
 
 import (
+	"io/fs"
 	"os"
 	"testing"
 	"time"
@@ -145,14 +146,6 @@ func (w *gofsWrapper) Truncate(name string, size int64) error {
 	return w.mfs.Truncate(name, size)
 }
 
-func (w *gofsWrapper) Separator() uint8 {
-	return w.mfs.Separator()
-}
-
-func (w *gofsWrapper) ListSeparator() uint8 {
-	return w.mfs.ListSeparator()
-}
-
 func (w *gofsWrapper) Chdir(dir string) error {
 	return w.mfs.Chdir(dir)
 }
@@ -163,4 +156,16 @@ func (w *gofsWrapper) Getwd() (string, error) {
 
 func (w *gofsWrapper) TempDir() string {
 	return w.mfs.TempDir()
+}
+
+func (w *gofsWrapper) ReadDir(name string) ([]fs.DirEntry, error) {
+	return w.mfs.ReadDir(name)
+}
+
+func (w *gofsWrapper) ReadFile(name string) ([]byte, error) {
+	return w.mfs.ReadFile(name)
+}
+
+func (w *gofsWrapper) Sub(dir string) (fs.FS, error) {
+	return absfs.FilerToFS(w.mfs, dir)
 }
